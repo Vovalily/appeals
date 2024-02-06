@@ -11,7 +11,8 @@ class AdminController extends Controller
     public function index():View
     {
         $appeals = Appeal::query()
-            ->orderBy('updated_at', 'asc')
+
+            ->orderByDesc('status')
             ->get();
         return view('admin.index' , compact('appeals'));
     }

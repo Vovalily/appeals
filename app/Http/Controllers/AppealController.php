@@ -15,10 +15,11 @@ class AppealController extends Controller
     public function index():View
     {
         $appeals = Appeal::query()
-            ->where('status', AppealEnum::CONFIRM)
-            ->orderBy('updated_at', 'desc')
-            ->get();
-        return view('appeals.index' , compact('appeals'));
+            ->where('status', AppealEnum::CONFIRM->name)
+            ->orderByDesc('updated_at')->paginate(5);
+
+        $apeals_fixed = Appeal::query()->where('is_fixed', 1)->get();
+        return view('appeals.index' , compact('appeals','apeals_fixed'));
     }
 
     /**
@@ -34,10 +35,10 @@ class AppealController extends Controller
      */
     public function store(Request $request)
     {
+
         Appeal::query()->create([
-           'user_name' => $request->user_name,
-           'question' => $request->question,
-           'status' => AppealEnum::REJECTED->value
+           'user_name' => $request->user_name ?? 'Anonymous',
+           'question' => $request->question
         ]);
         return redirect()->route('appeals.index');
     }
@@ -45,9 +46,21 @@ class AppealController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Appeal $appeal)
+    public function show(Appeal $appeal):View
     {
-        //
+        return view('admin.show_appeal', compact('appeal'));
+    }
+
+    public function answer(Request $request, Appeal $appeal)
+    {
+
+        $appeal->update([
+            'answer' => $request->answer,
+            'status' => AppealEnum::CONFIRM->name,
+            'is_fixed' => isset($request->is_fixed)
+        ]);
+
+        return redirect()->route('admin.index');
     }
 
     /**
@@ -63,11 +76,7 @@ class AppealController extends Controller
      */
     public function update(Request $request, Appeal $appeal)
     {
-        $appeal::query()->update([
-            'status' => $request->status
-        ]);
 
-        return redirect()->route('admins.index');
     }
 
     /**
@@ -75,8 +84,8 @@ class AppealController extends Controller
      */
     public function destroy(Appeal $appeal)
     {
-        $appeal::query()->delete();
+        $appeal->delete();
 
-        return redirect()->route('admins.index');
+        return redirect()->route('admin.index');
     }
 }

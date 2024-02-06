@@ -9,6 +9,8 @@
             <th>Человек</th>
             <th>Вопрос</th>
             <th>Ответ</th>
+            <th>Статус</th>
+            <th>Дата</th>
         </tr>
         </thead>
         <tbody>
@@ -17,20 +19,10 @@
                 <td>{{$appeal->user_name}}</td>
                 <td>{{$appeal->question}}</td>
                 <td>{{$appeal->answer}}</td>
-                <td>
-                    <form action="{{route('appeals.update', $appeal->id)}}" method="post">
-                        @csrf
-                        @method('PUT')
-                        <select name="status" @if($appeal->status == AppealEnum::CONFIRM) disabled @endif>
-                            <option hidden="hidden" selected>{{$appeal->status}}</option>
-                            @foreach(AppealEnum::cases() as $status)
-                                <option value="{{$status->value}}">{{$status->value}}</option>
-                            @endforeach
-                        </select>
-                        <button type="submit">Изменить статус</button>
-                    </form>
-                </td>
+                <td>{{$appeal->status}}</td>
+                <td>{{$appeal->created_at}}</td>
                 <td><a href="{{route('appeals.destroy', $appeal->id)}}">Удалить</a></td>
+                <td><a href="{{route('appeals.show', $appeal->id)}}">Перейти</a></td>
             </tr>
         @endforeach
 

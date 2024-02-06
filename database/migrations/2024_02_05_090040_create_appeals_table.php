@@ -14,10 +14,11 @@ return new class extends Migration
     {
         Schema::create('appeals', function (Blueprint $table) {
             $table->id();
-            $table->string('user_name')->default('Anonymous');
+            $table->string('user_name')->nullable();
             $table->text('question');
-            $table->text('answer')->nullable;
-            $table->text('status');
+            $table->text('answer')->nullable();
+            $table->boolean('is_fixed')->default(0);
+            $table->string('status')->default(AppealEnum::REJECTED);
             $table->timestamps();
         });
     }
